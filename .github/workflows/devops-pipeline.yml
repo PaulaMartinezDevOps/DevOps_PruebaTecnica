@@ -67,6 +67,12 @@ jobs:
     needs: build
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build image for scanning
+        run: docker build -t devops-prueba .
+
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@0.20.0
         with:
