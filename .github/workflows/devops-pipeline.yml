@@ -46,11 +46,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Verify installed packages
+      - name: Verify packages installed
         run: pip list
 
       - name: Run tests
-        run: pytest
+        run: pytest -v
 
   build:
     name: Build Docker Image
