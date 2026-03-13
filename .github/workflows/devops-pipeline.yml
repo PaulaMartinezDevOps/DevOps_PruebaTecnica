@@ -1,0 +1,93 @@
+name: DevOps Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - qa
+      - main
+
+jobs:
+
+  code-quality:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.branch.name=${{ github.ref_name }}
+
+  tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: code-quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        run: pytest
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: tests
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t devops-prueba .
+
+  security-scan:
+    name: Security Scan (Trivy)
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Scan Docker Image
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: devops-prueba
+
+  deploy-qa:
+    name: Deploy QA
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: github.ref == 'refs/heads/qa'
+
+    steps:
+      - name: Deploy message
+        run: echo "Deploying to QA environment"
+
+  deploy-prod:
+    name: Deploy Production
+    runs-on: ubuntu-latest
+    needs: deploy-qa
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy message
+        run: echo "Deploying to Production environment"
