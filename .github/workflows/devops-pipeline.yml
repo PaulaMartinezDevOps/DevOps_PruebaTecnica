@@ -74,7 +74,7 @@ jobs:
         run: docker build -t devops-prueba .
 
       - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: devops-prueba
 
