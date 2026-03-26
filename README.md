@@ -1,4 +1,4 @@
-# DevOps_PruebaTecnica – Ingeniero DevOps
+# DevOps_PruebaTecnica – Ingeniero DevOps.
 
 Este repositorio contiene la solución a la prueba técnica para el cargo de **Ingeniero DevOps**.  
 El objetivo del ejercicio fue implementar un flujo básico de **CI/CD** que incluya análisis de calidad de código, ejecución de pruebas, construcción de contenedores y validaciones de seguridad.
